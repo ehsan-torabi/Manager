@@ -98,7 +98,7 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 	Student* st = search(nationalCode);
 	if (st != nullptr)
 	{
-		if (searchCourse(st, name) != nullptr)
+		if (searchCourse(st, name) == nullptr)
 		{
 			Course temp;
 			temp.name = name;
@@ -131,8 +131,13 @@ bool removeCourse(Student* stu, string courseName)
 				stu->courses[i] = temp;
 				stu->courseCount--;
 				stu->gpa = gpaCalculator(stu);
+				return true;
 			}
-			return true;
+			else
+			{
+				return false;
+			}
+
 		}
 	}
 	return false;
@@ -168,8 +173,10 @@ void printInfo(Student* st)
 // Function to get the list of students
 void getStudentList()
 {
+	cout << "Student list:\n" << endl;
 	if (Manager.studentCount == 0)
 	{
+		system("cls");
 		cout << "Not found any students. Please first add a student" << endl;
 		return;
 	}
@@ -186,6 +193,7 @@ void getReportFile()
 	// Check if there are any students
 	if (Manager.studentCount == 0)
 	{
+		system("cls");
 		cout << "Not found any students. please first add a student" << endl;
 		return;
 	}
@@ -205,7 +213,8 @@ void getReportFile()
 	// Close the output file
 	out.close();
 	// Print a message indicating that the student info has been saved
-	cout << "Student info saved in Report.txt" << endl;
+	system("cls");
+	cout << "\nStudent info saved in Report.txt" << endl;
 }
 
 // Function to add a student
@@ -222,10 +231,12 @@ void menuAddStudent()
 	// Add the student
 	if (addStudent(name, family, nationalCode))
 	{
+		system("cls");
 		cout << "-------------- Student added successful ---------------\n" << endl;
 	}
 	else
 	{
+		system("cls");
 		cout << "-------------- National code is exist!!---------------\n" << endl;
 	}
 }
@@ -250,15 +261,19 @@ void menuAddCourse(string nationalCode)
 		// Add the course
 		if (addCourse(nationalCode, name, unit, score))
 		{
-			cout << "-------------- Course added successful ---------------\n" << endl;
+			system("cls");
+			cout << "\n-------------- Course added successful ---------------\n" << endl;
 		}
 		else
 		{
-			cout << "-------------- Course not added! This course is exist!! ---------------\n" << endl;
+			system("cls");
+			cout << "\n-------------- Course not added! This course is exist!! ---------------\n" << endl;
 		}
 	}
-	else
+	else {
+		system("cls");
 		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
+	}
 
 }
 
@@ -267,25 +282,35 @@ void editStudent(Student* stu, int choose)
 {
 	if (choose != 0)
 	{
-		string name, family;
+		string name, family, temp;
 		// Choose the property to edit
 		switch (choose)
 		{
 		case 1:
 			// Edit the student's name
+			system("cls");
 			cout << "Please enter new student name:" << endl;
+			temp = stu->name;
 			cin >> name;
 			stu->name = name;
+			system("cls");
+			cout << "\tName changed successful from " << temp << " to " << name << "\n" << endl;
 			break;
 
 		case 2:
 			// Edit the student's family
+			system("cls");
 			cout << "Please enter new student family:" << endl;
+			temp = stu->family;
 			cin >> family;
 			stu->family = family;
+			system("cls");
+			cout << "\tFamily changed successful from " << temp << " to " << family << "\n" << endl;
+
 			break;
 		case 3:
 			// Add a course
+			system("cls");
 			menuAddCourse(stu->nationalCode);
 			break;
 		case 4:
@@ -294,15 +319,17 @@ void editStudent(Student* stu, int choose)
 			cin >> name;
 			if (removeCourse(stu, name))
 			{
-				cout << "-------------- Course removed successful ---------------\n" << endl;
+				system("cls");
+				cout << "\n-------------- Course removed successful ---------------\n" << endl;
 			}
 			else
 			{
-				cout << "-------------- Course not found!! ---------------\n" << endl;
+				system("cls");
+				cout << "\n-------------- Course not removed ---------------\n" << endl;
 			}
 			break;
 		default:
-			cout << "-------------- Please enter valid number!! ---------------\n" << endl;
+			cout << "\n-------------- Please enter valid number!! ---------------\n" << endl;
 			break;
 		}
 	}
@@ -312,6 +339,44 @@ void editStudent(Student* stu, int choose)
 	}
 
 
+}
+
+// Function to edit a student
+void menuEditStudent()
+{
+	string nationalCode;
+	// Get the list of students
+	getStudentList();
+	// Get the national code from the user
+	cout << "Please enter student nationalCode:" << endl;
+	cin >> nationalCode;
+	// Search for the student
+	Student* stu = search(nationalCode);
+	if (stu != nullptr)
+	{
+		system("cls");
+		int choose = 100;
+		while (choose != 0) {
+			// Print the student's information
+			printInfo(stu);
+			cout << "Please enter number of that property you want to edit: " << endl;
+			cout << "\t 1 - Edit name" << endl;
+			cout << "\t 2 - Edit family" << endl;
+			cout << "\t 3 - Add course" << endl;
+			cout << "\t 4 - Remove course" << endl;
+			cout << "\t 0 - Back" << endl;
+			cin >> choose;
+			// Edit the student
+			editStudent(stu, choose);
+		}
+		system("cls");
+
+	}
+	else
+	{
+		system("cls");
+		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
+	}
 }
 
 // Function to search for a student
@@ -328,41 +393,10 @@ void menuSearch()
 		// Print the student's information
 		printInfo(stu);
 	}
-	else
-		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
-}
-
-// Function to edit a student
-void menuEditStudent()
-{
-	string nationalCode;
-	// Get the list of students
-	getStudentList();
-	// Get the national code from the user
-	cout << "Please enter student nationalCode:" << endl;
-	cin >> nationalCode;
-	// Search for the student
-	Student* stu = search(nationalCode);
-	if (stu != nullptr)
-	{
-		int choose = 100;
-		while (choose != 0) {
-			// Print the student's information
-			printInfo(stu);
-			cout << "Please enter number of that property you want to edit: " << endl;
-			cout << "\t 1 - Edit name" << endl;
-			cout << "\t 2 - Edit family" << endl;
-			cout << "\t 3 - Add course" << endl;
-			cout << "\t 4 - Remove course" << endl;
-			cout << "\t 0 - Back" << endl;
-			cin >> choose;
-			// Edit the student
-			editStudent(stu, choose);
-		}
-
+	else {
+		system("cls");
+		cout << "\n-------------- Not found this Student!!! ---------------\n" << endl;
 	}
-	else
-		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
 }
 
 // Function to handle the menu options
@@ -390,7 +424,13 @@ void menuHandler(int choose)
 		break;
 	case 4:
 		// Search for a student
-		menuSearch();
+		while (back == -1)
+		{
+			menuSearch();
+			cout << "\t 0 - back" << endl;
+			cin >> back;
+		}
+		system("cls"); // Clear the console
 		break;
 	case 5:
 		// Display the list of students
@@ -412,6 +452,7 @@ void menuHandler(int choose)
 		break;
 	default:
 		// Invalid option
+		system("cls");
 		cout << "-------------- Please enter valid number!! ---------------\n" << endl;
 		break;
 	}
