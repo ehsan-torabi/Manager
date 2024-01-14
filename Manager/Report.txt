@@ -1,0 +1,7 @@
+Student info:
+	Name : ehsan	Family : torabi	 National Code : 45
+Course info:
+	Course : math	Unit: 3	 Score : 12
+	Course : farsi	Unit: 2	 Score : 15
+Student GPA:13
+
