@@ -2,16 +2,15 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <iomanip>
-using namespace std;
 
+using namespace std;
 
 struct Course
 {
 	string name;
 	int unit;
-	int score;
-	int gpaScore;
+	float score;
+	float gpaRawScore;
 };
 
 struct Student
@@ -44,6 +43,17 @@ Student* search(string nationalCode)
 	return nullptr;
 }
 
+Course* searchCourse(Student* stu, string courseName)
+{
+	for (int i = 0; i < stu->courseCount; i++)
+	{
+		if (courseName.compare(stu->courses[i].name) == 0)
+		{
+			return &stu->courses[i];
+		}
+	}
+	return nullptr;
+}
 bool addStudent(string name, string family, string nationalCode)
 {
 	if (search(nationalCode) == nullptr)
@@ -69,7 +79,7 @@ float gpaCalculator(Student* st)
 		if (st->courses[i].name != "")
 		{
 			unitSum += st->courses[i].unit;
-			rawScore += st->courses[i].gpaScore;
+			rawScore += st->courses[i].gpaRawScore;
 		}
 	}
 	return rawScore / unitSum;
@@ -81,28 +91,39 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 	Student* st = search(nationalCode);
 	if (st != nullptr)
 	{
-		Course temp;
-		temp.name = name;
-		temp.unit = unit;
-		temp.score = score;
-		temp.gpaScore = unit * score;
-		st->courses[st->courseCount++] = temp;
-		st->gpa = gpaCalculator(st);
-		return true;
+		if (searchCourse(st,name) != nullptr)
+		{
+			Course temp;
+			temp.name = name;
+			temp.unit = unit;
+			temp.score = score;
+			temp.gpaRawScore = unit * score;
+			st->courses[st->courseCount++] = temp;
+			st->gpa = gpaCalculator(st);
+			return true;
+		}
 	}
 	return false;
 }
 
 bool removeCourse(Student* stu, string courseName)
 {
+	int answer = 0;
 	for (int i = 0; i < stu->courseCount; i++)
 	{
 		if (courseName.compare(stu->courses[i].name) == 0)
 		{
-			Course temp;
-			stu->courses[i] = temp;
-			stu->courseCount--;
-			stu->gpa = gpaCalculator(stu);
+			cout << "Are you sure to remove " << courseName << "?" << endl;
+			cout << "\t 1 - No " << endl;
+			cout << "\t 2 - Yes " << endl;
+			cin >> answer;
+			if (answer == 2)
+			{
+				Course temp;
+				stu->courses[i] = temp;
+				stu->courseCount--;
+				stu->gpa = gpaCalculator(stu);
+			}
 			return true;
 		}
 	}
@@ -110,10 +131,12 @@ bool removeCourse(Student* stu, string courseName)
 
 }
 
+
 void printInfo(Student* st)
 {
 	cout << "Student info:" << endl;
-	cout << "\tName : " << st->name << "\tFamily : " << st->family << "\t National Code : " << st->nationalCode << endl;
+	cout << "\tName : " << st->name << "\tFamily : " << st->family;
+	cout << "\tNational Code : " << st->nationalCode << endl;
 	cout << "Course info:" << endl;
 	if (st->courseCount != 0)
 	{
@@ -121,14 +144,15 @@ void printInfo(Student* st)
 		{
 			if (st->courses[i].name != "")
 			{
-				cout << "\tCourse : " << st->courses[i].name << "\tUnit: " << st->courses[i].unit << "\t Score : " << st->courses[i].score << endl;
+				cout << "\tCourse : " << st->courses[i].name << "\tUnit: " << st->courses[i].unit;
+				cout << "\t Score : " << st->courses[i].score << endl;
 			}
 		}
 		cout << "Student GPA:" << st->gpa << endl;
 	}
 	else
 	{
-		cout << "Not found any Courses. Please first add a course" << endl;
+		cout << "\nNot found any Courses. Please first add a course" << endl;
 	}
 	cout << "\n----------------------------------------------" << endl;
 }
@@ -205,7 +229,7 @@ void menuAddCourse(string nationalCode)
 		}
 		else
 		{
-			cout << "-------------- Course not added! ---------------\n" << endl;
+			cout << "-------------- Course not added! This course is exist!! ---------------\n" << endl;
 		}
 	}
 	else
@@ -278,21 +302,20 @@ void menuEditStudent()
 {
 	string nationalCode;
 	Student* stu;
-
+	getStudentList();
 	cout << "Please enter student nationalCode:" << endl;
 	cin >> nationalCode;
 	stu = search(nationalCode);
 	if (stu != nullptr)
 	{
-		printInfo(stu);
 		int choose = 100;
 		while (choose != 0) {
+			printInfo(stu);
 			cout << "Please enter number of that property you want to edit: " << endl;
 			cout << "\t 1 - Edit name" << endl;
 			cout << "\t 2 - Edit family" << endl;
 			cout << "\t 3 - Add course" << endl;
 			cout << "\t 4 - Remove course" << endl;
-			cout << "\t 5 - Edit course" << endl;
 			cout << "\t 0 - Back" << endl;
 			cin >> choose;
 			editStudent(stu, choose);
@@ -307,6 +330,7 @@ void menuEditStudent()
 void menuHandler(int choose)
 {
 	string nationalCode;
+	int back = -1;
 	system("cls");
 	switch (choose)
 	{
@@ -317,6 +341,7 @@ void menuHandler(int choose)
 		menuEditStudent();
 		break;
 	case 3:
+		getStudentList();
 		cout << "Please enter student nationalCode:" << endl;
 		cin >> nationalCode;
 		menuAddCourse(nationalCode);
@@ -325,7 +350,13 @@ void menuHandler(int choose)
 		menuSearch();
 		break;
 	case 5:
-		getStudentList();
+		while (back == -1)
+		{
+			getStudentList();
+			cout << "\t 0 - back" << endl;
+			cin >> back;
+		}
+		system("cls");
 		break;
 	case 6:
 		getReportFile();
@@ -353,6 +384,7 @@ int main()
 		cout << "\t 0 - Exit" << endl;
 		cin >> choose;
 		cout << "-----------------------------\n" << endl;
+		system("cls");
 		menuHandler(choose);
 	}
 }

@@ -1,7 +1,16 @@
 Student info:
-	Name : ehsan	Family : torabi	 National Code : 45
+	Name : eh	Family : tor	National Code : 467
 Course info:
 	Course : math	Unit: 3	 Score : 12
-	Course : farsi	Unit: 2	 Score : 15
-Student GPA:13
+Student GPA:12
+
+----------------------------------------------
+
+Student info:
+	Name : asghar	Family : akbari	National Code : 468
+Course info:
+
+Not found any Courses. Please first add a course
+
+----------------------------------------------
 
