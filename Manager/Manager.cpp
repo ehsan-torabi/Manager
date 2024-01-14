@@ -2,10 +2,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 
-struct course
+struct Course
 {
 	string name;
 	int unit;
@@ -18,9 +19,9 @@ struct Student
 	string name;
 	string family;
 	string nationalCode;
-	int gpa;
+	float gpa;
 	int courseCount;
-	course courses[5];
+	Course courses[5];
 };
 
 struct Manage
@@ -59,9 +60,9 @@ bool addStudent(string name, string family, string nationalCode)
 	return false;
 }
 
-int gpaCalculator(Student* st)
+float gpaCalculator(Student* st)
 {
-	int unitSum = 0, rawScore = 0;
+	float unitSum = 0, rawScore = 0;
 
 	for (int i = 0; i < st->courseCount; i++)
 	{
@@ -80,7 +81,7 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 	Student* st = search(nationalCode);
 	if (st != nullptr)
 	{
-		course temp;
+		Course temp;
 		temp.name = name;
 		temp.unit = unit;
 		temp.score = score;
@@ -92,9 +93,25 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 	return false;
 }
 
+bool removeCourse(Student* stu, string courseName)
+{
+	for (int i = 0; i < stu->courseCount; i++)
+	{
+		if (courseName.compare(stu->courses[i].name) == 0)
+		{
+			Course temp;
+			stu->courses[i] = temp;
+			stu->courseCount--;
+			stu->gpa = gpaCalculator(stu);
+			return true;
+		}
+	}
+	return false;
+
+}
+
 void printInfo(Student* st)
 {
-	cout << "-----------------------------" << endl;
 	cout << "Student info:" << endl;
 	cout << "\tName : " << st->name << "\tFamily : " << st->family << "\t National Code : " << st->nationalCode << endl;
 	cout << "Course info:" << endl;
@@ -113,6 +130,7 @@ void printInfo(Student* st)
 	{
 		cout << "Not found any Courses. Please first add a course" << endl;
 	}
+	cout << "\n----------------------------------------------" << endl;
 }
 
 void getStudentList()
@@ -137,12 +155,12 @@ void getReportFile()
 		return;
 	}
 	ofstream out("Report.txt");
-	streambuf* coutbuf = cout.rdbuf(); //save old buf
+	streambuf* coutBuf = cout.rdbuf(); //save old buf
 	cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
 	getStudentList();
 	cout.flush();
 	out.flush();
-	cout.rdbuf(coutbuf);
+	cout.rdbuf(coutBuf);
 	out.close();
 	cout << "Student info saved in Report.txt" << endl;
 }
@@ -167,13 +185,11 @@ void menuAddStudent()
 	}
 }
 
-void menuAddCourse()
+void menuAddCourse(string nationalCode)
 {
-	string name, nationalCode;
+	string name;
 	int unit, score;
 	Student* stu;
-	cout << "Please enter student nationalCode:" << endl;
-	cin >> nationalCode;
 	stu = search(nationalCode);
 	if (stu != nullptr)
 	{
@@ -197,6 +213,52 @@ void menuAddCourse()
 
 }
 
+void editStudent(Student* stu, int choose)
+{
+	if (choose != 0)
+	{
+		string name, family;
+		switch (choose)
+		{
+		case 1:
+			cout << "Please enter new student name:" << endl;
+			cin >> name;
+			stu->name = name;
+			break;
+
+		case 2:
+			cout << "Please enter new student family:" << endl;
+			cin >> family;
+			stu->family = family;
+			break;
+		case 3:
+			menuAddCourse(stu->nationalCode);
+			break;
+		case 4:
+			cout << "Please enter course name:" << endl;
+			cin >> name;
+			if (removeCourse(stu, name))
+			{
+				cout << "-------------- Course removed successful ---------------\n" << endl;
+			}
+			else
+			{
+				cout << "-------------- Course not found!! ---------------\n" << endl;
+			}
+			break;
+		default:
+			cout << "-------------- Please enter valid number!! ---------------\n" << endl;
+			break;
+		}
+	}
+	else
+	{
+		return;
+	}
+
+
+}
+
 void menuSearch()
 {
 	string nationalCode;
@@ -212,19 +274,52 @@ void menuSearch()
 		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
 }
 
+void menuEditStudent()
+{
+	string nationalCode;
+	Student* stu;
+
+	cout << "Please enter student nationalCode:" << endl;
+	cin >> nationalCode;
+	stu = search(nationalCode);
+	if (stu != nullptr)
+	{
+		printInfo(stu);
+		int choose = 100;
+		while (choose != 0) {
+			cout << "Please enter number of that property you want to edit: " << endl;
+			cout << "\t 1 - Edit name" << endl;
+			cout << "\t 2 - Edit family" << endl;
+			cout << "\t 3 - Add course" << endl;
+			cout << "\t 4 - Remove course" << endl;
+			cout << "\t 5 - Edit course" << endl;
+			cout << "\t 0 - Back" << endl;
+			cin >> choose;
+			editStudent(stu, choose);
+		}
+
+	}
+	else
+		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
+}
+
+
 void menuHandler(int choose)
 {
+	string nationalCode;
+	system("cls");
 	switch (choose)
 	{
 	case 1:
 		menuAddStudent();
 		break;
-
 	case 2:
-		menuAddCourse();
+		menuEditStudent();
 		break;
 	case 3:
-
+		cout << "Please enter student nationalCode:" << endl;
+		cin >> nationalCode;
+		menuAddCourse(nationalCode);
 		break;
 	case 4:
 		menuSearch();
@@ -259,7 +354,6 @@ int main()
 		cin >> choose;
 		cout << "-----------------------------\n" << endl;
 		menuHandler(choose);
-		cout << "-----------------------------\n" << endl;
 	}
 }
 
