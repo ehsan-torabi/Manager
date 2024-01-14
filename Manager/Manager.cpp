@@ -1,36 +1,38 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
 
 using namespace std;
 
+// Define a structure for Course
 struct Course
 {
-	string name;
-	int unit;
-	float score;
-	float gpaRawScore;
+	string name; // Name of the course
+	int unit; // Number of units in the course
+	float score; // Score of the course
+	float gpaRawScore; // Raw score for GPA calculation
 };
 
+// Define a structure for Student
 struct Student
 {
-	string name;
-	string family;
-	string nationalCode;
-	float gpa;
-	int courseCount;
-	Course courses[5];
+	string name; // Name of the student
+	string family; // Family name of the student
+	string nationalCode; // National code of the student
+	float gpa; // GPA of the student
+	int courseCount; // Number of courses the student is taking
+	Course courses[5]; // Array of courses the student is taking
 };
 
+// Define a structure for Manage
 struct Manage
 {
-	int studentCount;
-	Student list[20];
+	int studentCount; // Number of students
+	Student list[20]; // List of students
 
-}Manager;
+}Manager; // Manager object of Manage structure
 
-
+// Function to search a student by national code
 Student* search(string nationalCode)
 {
 	for (int i = 0; i < 20; i++)
@@ -43,6 +45,7 @@ Student* search(string nationalCode)
 	return nullptr;
 }
 
+// Function to search a course by course name
 Course* searchCourse(Student* stu, string courseName)
 {
 	for (int i = 0; i < stu->courseCount; i++)
@@ -54,6 +57,8 @@ Course* searchCourse(Student* stu, string courseName)
 	}
 	return nullptr;
 }
+
+// Function to add a student
 bool addStudent(string name, string family, string nationalCode)
 {
 	if (search(nationalCode) == nullptr)
@@ -70,6 +75,7 @@ bool addStudent(string name, string family, string nationalCode)
 	return false;
 }
 
+// Function to calculate GPA
 float gpaCalculator(Student* st)
 {
 	float unitSum = 0, rawScore = 0;
@@ -86,12 +92,13 @@ float gpaCalculator(Student* st)
 	return 0;
 }
 
+// Function to add a course
 bool addCourse(string nationalCode, string name, int unit, int score)
 {
 	Student* st = search(nationalCode);
 	if (st != nullptr)
 	{
-		if (searchCourse(st,name) != nullptr)
+		if (searchCourse(st, name) != nullptr)
 		{
 			Course temp;
 			temp.name = name;
@@ -106,6 +113,7 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 	return false;
 }
 
+// Function to remove a course
 bool removeCourse(Student* stu, string courseName)
 {
 	int answer = 0;
@@ -131,7 +139,7 @@ bool removeCourse(Student* stu, string courseName)
 
 }
 
-
+// Function to print student information
 void printInfo(Student* st)
 {
 	cout << "Student info:" << endl;
@@ -157,6 +165,7 @@ void printInfo(Student* st)
 	cout << "\n----------------------------------------------" << endl;
 }
 
+// Function to get the list of students
 void getStudentList()
 {
 	if (Manager.studentCount == 0)
@@ -171,34 +180,46 @@ void getStudentList()
 	}
 }
 
+// Function to generate a report file
 void getReportFile()
 {
+	// Check if there are any students
 	if (Manager.studentCount == 0)
 	{
 		cout << "Not found any students. please first add a student" << endl;
 		return;
 	}
+	// Create an output file stream
 	ofstream out("Report.txt");
-	streambuf* coutBuf = cout.rdbuf(); //save old buf
-	cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+	// Save the old buffer
+	streambuf* coutBuf = cout.rdbuf();
+	// Redirect std::cout to out.txt
+	cout.rdbuf(out.rdbuf());
+	// Get the list of students
 	getStudentList();
+	// Flush the output
 	cout.flush();
 	out.flush();
+	// Restore the old buffer
 	cout.rdbuf(coutBuf);
+	// Close the output file
 	out.close();
+	// Print a message indicating that the student info has been saved
 	cout << "Student info saved in Report.txt" << endl;
 }
 
-
+// Function to add a student
 void menuAddStudent()
 {
 	string name, family, nationalCode;
+	// Get the student's information from the user
 	cout << "Please enter student name:" << endl;
 	cin >> name;
 	cout << "Please enter student family:" << endl;
 	cin >> family;
 	cout << "Please enter student nationalCode:" << endl;
 	cin >> nationalCode;
+	// Add the student
 	if (addStudent(name, family, nationalCode))
 	{
 		cout << "-------------- Student added successful ---------------\n" << endl;
@@ -209,20 +230,24 @@ void menuAddStudent()
 	}
 }
 
+// Function to add a course
 void menuAddCourse(string nationalCode)
 {
 	string name;
 	int unit, score;
+	// Search for the student
 	Student* stu;
 	stu = search(nationalCode);
 	if (stu != nullptr)
 	{
+		// Get the course information from the user
 		cout << "Please enter Course name:" << endl;
 		cin >> name;
 		cout << "Please enter Course unit:" << endl;
 		cin >> unit;
 		cout << "Please enter Course score:" << endl;
 		cin >> score;
+		// Add the course
 		if (addCourse(nationalCode, name, unit, score))
 		{
 			cout << "-------------- Course added successful ---------------\n" << endl;
@@ -237,28 +262,34 @@ void menuAddCourse(string nationalCode)
 
 }
 
+// Function to edit a student
 void editStudent(Student* stu, int choose)
 {
 	if (choose != 0)
 	{
 		string name, family;
+		// Choose the property to edit
 		switch (choose)
 		{
 		case 1:
+			// Edit the student's name
 			cout << "Please enter new student name:" << endl;
 			cin >> name;
 			stu->name = name;
 			break;
 
 		case 2:
+			// Edit the student's family
 			cout << "Please enter new student family:" << endl;
 			cin >> family;
 			stu->family = family;
 			break;
 		case 3:
+			// Add a course
 			menuAddCourse(stu->nationalCode);
 			break;
 		case 4:
+			// Remove a course
 			cout << "Please enter course name:" << endl;
 			cin >> name;
 			if (removeCourse(stu, name))
@@ -283,33 +314,40 @@ void editStudent(Student* stu, int choose)
 
 }
 
+// Function to search for a student
 void menuSearch()
 {
 	string nationalCode;
-	Student* stu;
+	// Get the national code from the user
 	cout << "Please enter student nationalCode:" << endl;
 	cin >> nationalCode;
-	stu = search(nationalCode);
+	// Search for the student
+	Student* stu = search(nationalCode);
 	if (stu != nullptr)
 	{
+		// Print the student's information
 		printInfo(stu);
 	}
 	else
 		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
 }
 
+// Function to edit a student
 void menuEditStudent()
 {
 	string nationalCode;
-	Student* stu;
+	// Get the list of students
 	getStudentList();
+	// Get the national code from the user
 	cout << "Please enter student nationalCode:" << endl;
 	cin >> nationalCode;
-	stu = search(nationalCode);
+	// Search for the student
+	Student* stu = search(nationalCode);
 	if (stu != nullptr)
 	{
 		int choose = 100;
 		while (choose != 0) {
+			// Print the student's information
 			printInfo(stu);
 			cout << "Please enter number of that property you want to edit: " << endl;
 			cout << "\t 1 - Edit name" << endl;
@@ -318,6 +356,7 @@ void menuEditStudent()
 			cout << "\t 4 - Remove course" << endl;
 			cout << "\t 0 - Back" << endl;
 			cin >> choose;
+			// Edit the student
 			editStudent(stu, choose);
 		}
 
@@ -326,54 +365,64 @@ void menuEditStudent()
 		cout << "-------------- Not found this Student!!! ---------------\n" << endl;
 }
 
-
+// Function to handle the menu options
 void menuHandler(int choose)
 {
 	string nationalCode;
 	int back = -1;
-	system("cls");
+	system("cls"); // Clear the console
 	switch (choose)
 	{
 	case 1:
+		// Add a student
 		menuAddStudent();
 		break;
 	case 2:
+		// Edit a student
 		menuEditStudent();
 		break;
 	case 3:
+		// Add a course
 		getStudentList();
 		cout << "Please enter student nationalCode:" << endl;
 		cin >> nationalCode;
 		menuAddCourse(nationalCode);
 		break;
 	case 4:
+		// Search for a student
 		menuSearch();
 		break;
 	case 5:
+		// Display the list of students
 		while (back == -1)
 		{
 			getStudentList();
 			cout << "\t 0 - back" << endl;
 			cin >> back;
 		}
-		system("cls");
+		system("cls"); // Clear the console
 		break;
 	case 6:
+		// Save the student info to a file
 		getReportFile();
 		break;
 	case 0:
+		// Exit the program
 		exit(0);
 		break;
 	default:
+		// Invalid option
 		cout << "-------------- Please enter valid number!! ---------------\n" << endl;
 		break;
 	}
 }
 
+// Main function
 int main()
 {
 	int choose;
 	while (true) {
+		// Display the menu options
 		cout << "Please enter number of option:" << endl;
 		cout << "\t 1 - Add student" << endl;
 		cout << "\t 2 - Edit student" << endl;
@@ -384,7 +433,8 @@ int main()
 		cout << "\t 0 - Exit" << endl;
 		cin >> choose;
 		cout << "-----------------------------\n" << endl;
-		system("cls");
+		system("cls"); // Clear the console
+		// Handle the chosen menu option
 		menuHandler(choose);
 	}
 }
