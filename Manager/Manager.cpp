@@ -8,9 +8,9 @@ using namespace std;
 struct Course
 {
 	string name; // Name of the course
-	int unit; // Number of units in the course
-	float score; // Score of the course
-	float gpaRawScore; // Raw score for GPA calculation
+	int unit = 0; // Number of units in the course
+	float score = 0; // Score of the course
+	float gpaRawScore = 0; // Raw score for GPA calculation
 };
 
 // Define a structure for Student
@@ -19,15 +19,15 @@ struct Student
 	string name; // Name of the student
 	string family; // Family name of the student
 	string nationalCode; // National code of the student
-	float gpa; // GPA of the student
-	int courseCount; // Number of courses the student is taking
+	float gpa = 0; // GPA of the student
+	int courseCount = 0; // Number of courses the student is taking
 	Course courses[5]; // Array of courses the student is taking
 };
 
 // Define a structure for Manage
 struct Manage
 {
-	int studentCount; // Number of students
+	int studentCount = 0; // Number of students
 	Student list[20]; // List of students
 
 }Manager; // Manager object of Manage structure
@@ -93,7 +93,7 @@ float gpaCalculator(Student* st)
 }
 
 // Function to add a course
-bool addCourse(string nationalCode, string name, int unit, int score)
+bool addCourse(string nationalCode, string name, int unit, float score)
 {
 	Student* st = search(nationalCode);
 	if (st != nullptr)
@@ -104,7 +104,7 @@ bool addCourse(string nationalCode, string name, int unit, int score)
 			temp.name = name;
 			temp.unit = unit;
 			temp.score = score;
-			temp.gpaRawScore = unit * score;
+			temp.gpaRawScore = score * unit;
 			st->courses[st->courseCount++] = temp;
 			st->gpa = gpaCalculator(st);
 			return true;
