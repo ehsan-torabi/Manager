@@ -8,21 +8,69 @@ The program uses two main structures: `Student` and `Course`. The `Student` stru
 
 ## Functions
 
-The program includes several functions to manage students and courses:
+### 1. Add Student
 
-- `addStudent`: Adds a new student.
-- `addCourse`: Adds a new course to a student.
-- `search`: Searches for a student by their national code.
-- `searchCourse`: Searches for a course by its name.
-- `removeCourse`: Removes a course from a student's list of courses.
-- `gpaCalculator`: Calculates the GPA of a student.
-- `printInfo`: Prints the information of a student.
-- `getStudentList`: Prints the information of all students.
-- `getReportFile`: Generates a report file with the information of all students.
+Allows you to add a new student to the system with the following information:
 
-## How to Run
+- Student Name
+- Family Name
+- National Code
 
-To run the program, compile the C++ file and run the resulting executable. The program will display a menu with options to add a student, edit a student, add a course, search for a student, display the list of students, save the student info to a file, or exit the program.
+### 2. Edit Student
+
+Enables you to edit existing student information, including:
+
+- Edit student's name
+- Edit student's family name
+- Add a new course for the student
+- Remove a course for the student
+
+### 3. Add Course
+
+Adds a new course for a specific student, including:
+
+- Course Name
+- Course Unit
+- Course Score
+
+### 4. Remove Course
+
+Removes a course for a specific student by providing the course name.
+
+### 5. Search Student
+
+Searches for a student by their national code and displays their information.
+
+### 6. Display Student List
+
+Displays the list of all students along with their information.
+
+### 7. Generate Report
+
+Generates a report file (`Report.txt`) containing information about all students and their courses.
+
+## Getting Started
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/ehsan-torabi/Manager.git
+    cd Manager
+    ```
+
+2. Compile and run the program:
+
+    ```bash
+    g++ main.cpp -o Manager
+    ./Manager
+    ```
+
+3. Follow the on-screen instructions to use the program.
+
+## File Structure
+
+- `Manager.cpp`: Main source code file containing the student management system implementation.
+- `Report.txt`: The output file where student information is saved when generating a report.
 
 ## Note
 
