@@ -29,6 +29,17 @@ struct Manage {
     Student list[MAX_STUDENTS];
 } Manager;
 
+
+// Function to clear the console screen
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+
 // Function to search for a student by national code
 Student* searchStudentByNationalCode(const string& nationalCode) {
     for (int i = 0; i < MAX_STUDENTS; i++) {
@@ -98,6 +109,7 @@ bool removeCourse(Student* student, const string& courseName) {
     int answer = 0;
     for (int i = 0; i < student->courseCount; i++) {
         if (courseName == student->courses[i].name) {
+            clearScreen();
             cout << "Are you sure to remove " << courseName << "?" << endl;
             cout << "\t 1 - No " << endl;
             cout << "\t 2 - Yes " << endl;
@@ -119,6 +131,7 @@ bool removeCourse(Student* student, const string& courseName) {
 
 // Function to print student information
 void printStudentInfo(Student* student) {
+    clearScreen();
     cout << "Student info:" << endl;
     cout << "\tName : " << student->name << "\tFamily : " << student->family;
     cout << "\tNational Code : " << student->nationalCode << endl;
@@ -140,6 +153,7 @@ void printStudentInfo(Student* student) {
 
 // Function to display the list of students
 void displayStudentList() {
+    clearScreen();
     cout << "Student list:\n" << endl;
     if (Manager.studentCount == 0) {
         cout << "Not found any students. Please first add a student" << endl;
@@ -159,14 +173,35 @@ void generateReportFile() {
     }
 
     ofstream outFile("Report.txt");
-    streambuf* coutBuf = cout.rdbuf();
-    cout.rdbuf(outFile.rdbuf());
-    displayStudentList();
-    cout.flush();
-    outFile.flush();
-    cout.rdbuf(coutBuf);
-    outFile.close();
+    if (!outFile.is_open()) {
+        cout << "Error: Unable to open the output file." << endl;
+        return;
+    }
 
+    for (int i = 0; i < Manager.studentCount; i++) {
+        Student* student = &Manager.list[i];
+        outFile << "Student info:" << endl;
+        outFile << "\tName : " << student->name << "\tFamily : " << student->family;
+        outFile << "\tNational Code : " << student->nationalCode << endl;
+        outFile << "Course info:" << endl;
+
+        if (student->courseCount != 0) {
+            for (int j = 0; j < student->courseCount; j++) {
+                if (!student->courses[j].name.empty()) {
+                    outFile << "\tCourse : " << student->courses[j].name << "\tUnit: " << student->courses[j].unit;
+                    outFile << "\t Score : " << student->courses[j].score << endl;
+                }
+            }
+            outFile << "Student GPA:" << student->gpa << endl;
+        }
+        else {
+            outFile << "\nNot found any Courses. Please first add a course" << endl;
+        }
+
+        outFile << "\n----------------------------------------------" << endl;
+    }
+
+    outFile.close();
     cout << "\nStudent info saved in Report.txt" << endl;
 }
 
@@ -252,6 +287,7 @@ void editStudent(Student* student, int choice) {
             break;
         }
     }
+    clearScreen();
 }
 
 // Function to edit a student
@@ -262,6 +298,7 @@ void menuEditStudent() {
     cin >> nationalCode;
     Student* student = searchStudentByNationalCode(nationalCode);
     if (student != nullptr) {
+        clearScreen();
         int choice = 100;
         while (choice != 0) {
             printStudentInfo(student);
@@ -274,6 +311,7 @@ void menuEditStudent() {
             cin >> choice;
             editStudent(student, choice);
         }
+        clearScreen();
     }
     else {
         cout << "-------------- Not found this Student!!! ---------------\n" << endl;
@@ -297,6 +335,7 @@ void menuSearch() {
 // Function to handle the menu options
 void menuHandler(int choice) {
     string nationalCode;
+    int back = -1;
     clearScreen();
     switch (choice) {
     case 1:
@@ -312,7 +351,6 @@ void menuHandler(int choice) {
         menuAddCourse(nationalCode);
         break;
     case 4:
-        int back = -1;
         while (back == -1) {
             menuSearch();
             cout << "\t 0 - Back" << endl;
@@ -321,7 +359,6 @@ void menuHandler(int choice) {
         clearScreen();
         break;
     case 5:
-        back = -1;
         while (back == -1) {
             displayStudentList();
             cout << "\t 0 - Back" << endl;
@@ -341,14 +378,7 @@ void menuHandler(int choice) {
     }
 }
 
-// Function to clear the console screen
-void clearScreen() {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-}
+
 
 // Main function
 int main() {
