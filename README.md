@@ -61,7 +61,7 @@ Generates a report file (`Report.txt`) containing information about all students
 2. Compile and run the program:
 
     ```bash
-    g++ main.cpp -o Manager
+    g++ Manager.cpp -o Manager
     ./Manager
     ```
 
